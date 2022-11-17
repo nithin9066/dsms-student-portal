@@ -1,0 +1,1 @@
+export const url = "https://dsms.mentrictech.in/backend/api/auth/";
