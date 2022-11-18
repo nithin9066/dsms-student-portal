@@ -1,71 +1,86 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Alert } from "../components/Alert";
 
-function Login() {
-    const { register, handleSubmit } = useForm({ shouldUseNativeValidation: true })
+
+function Login(props) {
+    const { register, handleSubmit, formState: {errors} } = useForm({ shouldUseNativeValidation: true })
     const [schoolList, setschoolList] = useState([]);
     const navigate = useNavigate();
-    useEffect(()=>{
+    const location = useLocation();
+    const submitBtn = useRef();
+    useEffect(() => {
+        console.log(location.state);
         axios({
             method: "GET",
             url: "https://dsms.mentrictech.in/backend/api/auth/all_schools_list",
-            
-        }).then(({data})=>{
+
+        }).then(({ data }) => {
             setschoolList(data.data.result)
-        }).catch((error)=>{
+        }).catch((error) => {
             console.log(error);
         })
-    },[])
+    }, [])
 
-    const loginHandler = (formdata) =>{
-        console.log(formdata);
+    const loginHandler = (formdata) => {
+        console.log(errors);
+        submitBtn.current.innerHTML = "Loading . . . ."
         axios({
             method: 'POST',
             url: "https://dsms.mentrictech.in/backend/api/auth/student_login",
             data: formdata,
-        }).then(({data}) =>{
-            console.log(data.data.result);
-            sessionStorage.setItem('user_id', data.data.result.userdata.id)
-            sessionStorage.setItem('user_name', data.data.result.userdata.name)
+        }).then(({ data }) => {
+            submitBtn.current.innerHTML = "Login"
+            if (data.errors) {
+                Alert("error", data.data.message)
+            }
+            else
+            {
+                sessionStorage.setItem('user_id', data.data.result.userdata.id)
+                sessionStorage.setItem('user_name', data.data.result.userdata.name)
+                sessionStorage.setItem('user', JSON.stringify(data.data.result))
+                console.log(formdata.school_id);
+                sessionStorage.setItem('school_id', formdata.school_id)
+                Alert("success", data.data.message)
+                setTimeout(() => {
+                    // navigate(location.state ? location.state.from.pathname : '/schedules')
+                    navigate('/schedules')
+                }, 1000)
 
-            sessionStorage.setItem('user', JSON.stringify(data.data.result))
-            console.log(formdata.school_id);
-            sessionStorage.setItem('school_id', formdata.school_id)
-            Alert("success", data.data.message)
-            setTimeout(() => {
-                navigate('/sessions')
-            },1000)
-        }).catch((error) =>{
-            console.log("error",error);
+            }
+        }).catch(({response}) => {
+            console.log("error", response);
+            Alert("error", response.data.data.message)
+            submitBtn.current.innerHTML = "Login"
+
         })
     }
     return (
         <div className="h-screen bg-slate-300 flex justify-center items-center">
 
-            <div className="bg-white rounded-xl px-20 py-10 shadow-lg">
-                <h1 className="text-2xl text-blue-700 font-bold mb-7">Student School</h1>
+            <div className="bg-white rounded-xl lg:p-10 px-3 py-5 drop-shadow-md">
+                <h1 className="text-2xl text-black font-extrabold mb-7 uppercase">Student Login</h1>
                 <form onSubmit={handleSubmit(loginHandler)} className="space-y-5">
                     <div className="flex flex-col gap-2">
                         <label className="font-medium">School</label>
-                        <select {...register('school_id')} className="border border-black/30 rounded-md p-2">
+                        <select {...register('school_id', {required: true})} className="border border-black/30 rounded-md p-2">
                             <option>Select School</option>
                             {
-                                schoolList.map((item,inx)=> <option key={inx} value={item.id}>{item.name}</option>)
+                                schoolList.map((item, inx) => <option key={inx} value={item.id}>{item.name}</option>)
                             }
                         </select>
                     </div>
                     <div className="flex flex-col gap-2">
                         <label className="font-medium">Email</label>
-                        <input type={'text'} {...register('email')} className="border border-black/30 rounded-md p-2" />
+                        <input type={'text'} {...register('email', {required: true})} className="border border-black/30 rounded-md p-2" />
                     </div>
                     <div className="flex flex-col gap-2">
                         <label className="font-medium">Password</label>
-                        <input type={'password'} {...register('password')} className="border border-black/30 rounded-md p-2" />
+                        <input type={'password'} {...register('password', {required: true})} className="border border-black/30 rounded-md p-2" />
                     </div>
-                    <button className="w-full bg-blue-600 text-white font-medium p-2 rounded-md">Login</button>
+                    <button ref={submitBtn} className="w-full bg-black text-white font-medium p-2 rounded-md">Login</button>
                 </form>
             </div>
 

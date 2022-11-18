@@ -1,11 +1,12 @@
 import { Icon } from "@iconify/react";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import Moment from "react-moment";
 import { Alert } from "../components/Alert";
-import Header from "../components/Header";
+import { Confirm } from "../components/ConfirmAlert";
 import SideMenu from "../components/SideMenu";
 
-function Sessions() {
+function Schedules() {
     const studentInfo = JSON.parse(sessionStorage.getItem('user')).student_info;
     const [plans, setPlans] = useState(null);
     const [didUpdate, setUpdate] = useState(false)
@@ -22,53 +23,46 @@ function Sessions() {
     }, [didUpdate])
 
     const addSchedule = (schedule_id) => {
-        if(window.confirm("Are You Sure ?") == true)
-        {
+
             axios({
                 method: "GET",
                 url: `https://dsms.mentrictech.in/backend/api/auth/on_click_of_schedule/${schedule_id}`,
             }).then(({data}) => {
                 console.log(data.data.message);
-                Alert("success", data.data.message)
+                data.data.success ? Alert("success", data.data.message) : Alert("error", data.data.message)
                 setUpdate(!didUpdate)
             }).catch(error => {
                 alert("Someting Went Wrong!")
             })
-        }
-        else
-        return false;
-    }
+   }
     return (
         <div className="grid grid-cols-12 h-screen ">
             <SideMenu />
-            <div className="col-span-9 bg-purple-100 overflow-auto">
-                <Header />
+            <div className="col-span-9 bg-slate-200 overflow-auto mt-14 p-5">
                 {
                    plans !== null ? plans.length > 0 ?
 
-                        <div className="p-5">
+                        <div className="p-5 bg-white/80 rounded-xl">
                             <table className="w-full overflow-auto">
-                                <thead className="bg-purple-700 text-white/70 font-bold text-center uppercase">
+                                <thead className="font-bold text-center uppercase">
                                     <tr>
-                                        <td className="p-4">Details</td>
-                                        <td className="p-4">Total Seats</td>
-                                        <td className="p-4">Seats Booked</td>
-                                        <td className="p-4">Mode</td>
-                                        <td className="p-4">Schedule Starts</td>
-                                        <td className="p-4">Action</td>
+                                        <td className="px-2 pt-2 pb-4">Name</td>
+                                        <td className="px-2 pt-2 pb-4">Available Slots</td>
+                                        <td className="px-2 pt-2 pb-4">Mode</td>
+                                        <td className="px-2 pt-2 pb-4">Starts At</td>
+                                        <td className="px-2 pt-2 pb-4">Action</td>
                                     </tr>
                                 </thead>
                                 <tbody className="text-center">
                                     {
                                         plans.map((item, inx) => {
                                             return (
-                                                <tr key={inx} className="odd:bg-purple-200 font-medium text-indigo-900">
-                                                    <td className="p-2">{item.name_en}</td>
-                                                    <td className="p-2">{item.session_capacity}</td>
-                                                    <td className="p-2">{item.total_confirmation}</td>
+                                                <tr key={inx} className="odd:bg-black/5 font-medium text-balck">
+                                                    <td className="p-2 rounded-l-lg">{item.name_en}</td>
+                                                    <td className="p-2">{item.session_capacity - item.total_confirmation}</td>
                                                     <td className="p-2">{item.mode_of_learning}</td>
-                                                    <td className="p-2">{item.start_time}</td>
-                                                    <td className="p-2" title="Confirm Session"><button onClick={() => addSchedule(item.id)}><Icon className="text-purple-700 text-3xl m-auto" icon="material-symbols:add-circle" /></button></td>
+                                                    <td className="p-2"><Moment format="DD-MM-YYYY | hh:mm a">{item.start_time}</Moment></td>
+                                                    <td className="p-2 rounded-r-lg flex items-center justify-center" title="Confirm Session"><button className="bg-black px-2 py-1 text-white rounded-md" onClick={() => Confirm("confirm","Are you sure you want to confirm the schedule?", ()=> addSchedule(item.id))}>Confirm</button></td>
                                                 </tr>
                                             )
                                         })
@@ -76,7 +70,7 @@ function Sessions() {
                                 </tbody>
                             </table>
                         </div>
-                        : <div className="text-4xl font-extrabold text-purple-500 flex justify-center items-center h-4/5">No Schedules Found!</div>
+                        : <div className="text-4xl font-extrabold text-black/50 flex justify-center items-center h-4/5">No Schedules Found!</div>
                     : ''
                 }
             </div>
@@ -84,4 +78,4 @@ function Sessions() {
     );
 }
 
-export default Sessions;
+export default Schedules;
