@@ -1,12 +1,12 @@
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Alert } from "../components/Alert";
 
 
 function Login(props) {
-    const { register, handleSubmit, formState: {errors} } = useForm({ shouldUseNativeValidation: true })
+    const { register, handleSubmit, formState: { errors } } = useForm({ shouldUseNativeValidation: true })
     const [schoolList, setschoolList] = useState([]);
     const navigate = useNavigate();
     const location = useLocation();
@@ -36,8 +36,7 @@ function Login(props) {
             if (data.errors) {
                 Alert("error", data.data.message)
             }
-            else
-            {
+            else {
                 sessionStorage.setItem('user_id', data.data.result.userdata.id)
                 sessionStorage.setItem('user_name', data.data.result.userdata.name)
                 sessionStorage.setItem('user', JSON.stringify(data.data.result))
@@ -50,7 +49,7 @@ function Login(props) {
                 }, 1000)
 
             }
-        }).catch(({response}) => {
+        }).catch(({ response }) => {
             console.log("error", response);
             Alert("error", response.data.data.message)
             submitBtn.current.innerHTML = "Login"
@@ -65,7 +64,7 @@ function Login(props) {
                 <form onSubmit={handleSubmit(loginHandler)} className="space-y-5">
                     <div className="flex flex-col gap-2">
                         <label className="font-medium">School</label>
-                        <select {...register('school_id', {required: true})} className="border border-black/30 rounded-md p-2">
+                        <select {...register('school_id', { required: true })} className="border border-black/30 rounded-md p-2">
                             <option>Select School</option>
                             {
                                 schoolList.map((item, inx) => <option key={inx} value={item.id}>{item.name}</option>)
@@ -74,13 +73,18 @@ function Login(props) {
                     </div>
                     <div className="flex flex-col gap-2">
                         <label className="font-medium">Email</label>
-                        <input type={'text'} {...register('email', {required: true})} className="border border-black/30 rounded-md p-2" />
+                        <input type={'text'} {...register('email', { required: true })} className="border border-black/30 rounded-md p-2" />
                     </div>
                     <div className="flex flex-col gap-2">
                         <label className="font-medium">Password</label>
-                        <input type={'password'} {...register('password', {required: true})} className="border border-black/30 rounded-md p-2" />
+                        <input type={'password'} {...register('password', { required: true })} className="border border-black/30 rounded-md p-2" />
                     </div>
+                    <div>
                     <button ref={submitBtn} className="w-full bg-black text-white font-medium p-2 rounded-md">Login</button>
+                    </div>
+                    <div>
+                        <Link className="font-medium text-sm" to={'/register'}>Don’t Have Account? <span className="text-blue-800 ">Sign up here</span></Link>
+                    </div>
                 </form>
             </div>
 

@@ -6,12 +6,18 @@ import Login from "./pages/Login";
 import Schedules from "./pages/Schedules";
 import UserProfile from "./pages/UserProfile";
 import Logout from "./pages/Logout";
+import Register from "./pages/Register";
+import OtpVeification from "./pages/OtpVeification";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/otp-verification/:user_id/:username" element={<OtpVeification />} />
+
+
         <Route element={<RequireAuth />}>
           <Route path="/schedules" element={<Schedules />} />
           <Route path="/confirm-schedules" element={<ConfirmSchedules />} />
