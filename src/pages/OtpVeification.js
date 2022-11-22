@@ -53,8 +53,12 @@ function OtpVeification() {
                 navigate('/')
             },1000)
             
-        }).catch((error) => {
-            console.log(error);
+        }).catch(({response}) => {
+            if(response.data.errors)
+            {
+                Alert('error', response.data.data.message)
+            }
+            console.log(response);
         })
     }
     return (
