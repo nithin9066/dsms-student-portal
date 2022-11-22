@@ -16,8 +16,6 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/otp-verification/:user_id/:username" element={<OtpVeification />} />
-
-
         <Route element={<RequireAuth />}>
           <Route path="/schedules" element={<Schedules />} />
           <Route path="/confirm-schedules" element={<ConfirmSchedules />} />

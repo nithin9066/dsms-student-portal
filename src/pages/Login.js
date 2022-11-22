@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useLoading } from "react-hook-loading";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Alert } from "../components/Alert";
 
@@ -11,14 +12,17 @@ function Login(props) {
     const navigate = useNavigate();
     const location = useLocation();
     const submitBtn = useRef();
+    const [loading, setLoading] = useLoading(false)
     useEffect(() => {
         console.log(location.state);
+        setLoading(true)
         axios({
             method: "GET",
             url: "https://dsms.mentrictech.in/backend/api/auth/all_schools_list",
 
         }).then(({ data }) => {
             setschoolList(data.data.result)
+            setLoading(false)
         }).catch((error) => {
             console.log(error);
         })
