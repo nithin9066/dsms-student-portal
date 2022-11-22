@@ -7,7 +7,7 @@ import Input from "../components/Input";
 import Select from "../components/Select";
 
 function Register() {
-    const { register, handleSubmit, getValues, setValue, formState: { errors } } = useForm({shouldFocusError: true, shouldUseNativeValidation: false})
+    const { register, handleSubmit, getValues, setValue, formState: { errors } } = useForm({ shouldFocusError: true, shouldUseNativeValidation: false })
     const [schoolList, setschoolList] = useState([]);
     const [GenderList, setGenderList] = useState([]);
     const [LicenseTypeList, setLicenseTypeList] = useState([]);
@@ -65,12 +65,11 @@ function Register() {
         })
     }, [])
     const getLicenseTypes = (e) => {
-        if(getValues('school_id') === undefined)
-        {
+        if (getValues('school_id') === undefined) {
             Alert('warning', "Please select school")
             schools.style.outline = "2px solid red"
             schools.focus();
-            
+
         }
         axios({
             method: "GET",
@@ -82,11 +81,13 @@ function Register() {
             console.log(error);
         })
     }
-    function resetSubLicense(z){
+    function resetSubLicense(z) {
         const sublicense = document.querySelectorAll('.sublicense select');
-        sublicense.forEach((ele, inx) =>{
-            if(inx > z)
-            ele.value = ''
+        setValue('level','');
+        setPlans([])
+        sublicense.forEach((ele, inx) => {
+            if (inx > z)
+                ele.value = ''
         })
     }
     const getSubLicense = (e) => {
@@ -104,7 +105,7 @@ function Register() {
                 license_id: e.target.value
             }
         }).then(({ data }) => {
-            
+
             setSubLicenseTypeList(data.data.result[0].data ? data.data.result[0].data : [])
             setSubLicenseLavel1List([])
             setSubLicenseLavel2List([])
@@ -189,19 +190,23 @@ function Register() {
                 sub_license_lv3_id: license.sub_license_lv3_id,
             }
         }).then(({ data }) => {
-            if(data.data.success === "falied")
-            Alert('error', data.data.message)
+            if (data.data.success === "falied") {
+                Alert('error', data.data.message)
+                setPlans([])
+            }
             else
-            setPlans(data.data.result)
+                setPlans(data.data.result)
+
+            setValue('subscription_id', '')
 
         }).catch((error) => {
             console.log(error);
-            
+
         })
     }
     const StudentRegister = (formData) => {
         console.warn(formData);
-        
+
         axios({
             method: "POST",
             url: `https://dsms.mentrictech.in/backend/api/auth/student_register`,
@@ -213,16 +218,13 @@ function Register() {
             console.log(error);
         })
     }
-    function check(e)
-    {
-        setValue('school_id', e.target.value, {shouldValidate: true, shouldTouch: true})
+    function check(e) {
+        setValue('school_id', e.target.value, { shouldValidate: true, shouldTouch: true })
         setValue('gender', '')
-        if(!getValues('school_id'))
-        {
+        if (!getValues('school_id')) {
             e.target.style.outline = '2px solid red'
         }
-        else
-        {
+        else {
             e.target.style.outline = '2px solid black'
         }
     }
@@ -230,7 +232,7 @@ function Register() {
         <div className="bg-slate-200 flex justify-center items-center">
             <form onSubmit={handleSubmit(StudentRegister)} className="p-5 bg-white drop-shadow-xl rounded-lg space-y-1 grid grid-cols-2 gap-5 my-5">
                 <h1 className="text-3xl uppercase font-bold">Student Registration</h1>
-                <Select errors={errors.school_id} id={'school_id'} {...register('school_id', {required: true})} callback={check} className="col-span-2" List={schoolList} label={"Select School"} />
+                <Select errors={errors.school_id} id={'school_id'} {...register('school_id', { required: true })} callback={check} className="col-span-2" List={schoolList} label={"Select School"} />
                 <Input errors={errors.first_name_english} name={register('first_name_english', { required: true })} label={'First Name(English)'} />
                 <Input errors={errors.second_name_english} name={register('second_name_english', { required: true })} label={'Last Name(English)'} />
                 <Input errors={errors.first_name_arabic} name={register('first_name_arabic', { required: true })} label={'First Name(Arabic)'} />
@@ -256,7 +258,7 @@ function Register() {
                 {license.sub_license_lv2_id && <Select className={"sublicense"} callback={(e) => setLicense((license) => ({ ...license, ...{ sub_license_lv3_id: e.target.value } }))} label={'Sub License Level 3'} List={SubLicenseLevel3List} />}
                 <Input errors={errors.password} name={register('password', { required: true })} label={'Password'} type={'password'} />
                 <Input errors={errors.confirm_password} name={register('confirm_password', { required: true })} label={'Confirm Password'} type={'password'} />
-                <Select errors={errors.level} callback={getPlans} name={register('level', { required: true })} label={'Sub License Level 3'} List={levels} />
+                <Select errors={errors.level} callback={getPlans} name={register('level', { required: true })} label={'Level'} List={levels} />
                 <Select errors={errors.subscription_id} name={register('subscription_id', { required: true })} label={'Plan'} List={Plans} />
                 <div className="col-span-2 text-center">
                     <button className="bg-black text-white/90 px-3 py-2 w-1/4 rounded-lg font-bold">Register</button>
