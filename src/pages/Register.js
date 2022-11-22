@@ -258,7 +258,7 @@ function Register() {
                 {license.sub_license_lv2_id && <Select className={"sublicense"} callback={(e) => setLicense((license) => ({ ...license, ...{ sub_license_lv3_id: e.target.value } }))} label={'Sub License Level 3'} List={SubLicenseLevel3List} />}
                 <Input errors={errors.password} name={register('password', { required: true })} label={'Password'} type={'password'} />
                 <Input errors={errors.confirm_password} name={register('confirm_password', { required: true })} label={'Confirm Password'} type={'password'} />
-                <Select errors={errors.level} callback={getPlans} name={register('level', { required: true })} label={'Level'} List={levels} />
+                <Select errors={errors.level} callback={getPlans} name={register('level_id', { required: true })} label={'Level'} List={levels} />
                 <Select errors={errors.subscription_id} name={register('subscription_id', { required: true })} label={'Plan'} List={Plans} />
                 <div className="col-span-2 text-center">
                     <button className="bg-black text-white/90 px-3 py-2 w-1/4 rounded-lg font-bold">Register</button>
