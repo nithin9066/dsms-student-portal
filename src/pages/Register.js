@@ -82,11 +82,19 @@ function Register() {
             console.log(error);
         })
     }
+    function resetSubLicense(z){
+        const sublicense = document.querySelectorAll('.sublicense select');
+        sublicense.forEach((ele, inx) =>{
+            if(inx > z)
+            ele.value = ''
+        })
+    }
     const getSubLicense = (e) => {
+        resetSubLicense(-1)
         setLicense((license) => ({
             ...license,
             ...{
-                license_type_id: e.target.value
+                license_type_id: e.target.value,
             }
         }));
         axios({
@@ -96,12 +104,20 @@ function Register() {
                 license_id: e.target.value
             }
         }).then(({ data }) => {
+            
             setSubLicenseTypeList(data.data.result[0].data ? data.data.result[0].data : [])
+            setSubLicenseLavel1List([])
+            setSubLicenseLavel2List([])
+            setSubLicenseLavel3List([])
+
+
         }).catch((error) => {
             console.log(error);
         })
     }
     const getSubLicenseL1 = (e) => {
+        resetSubLicense(0)
+
         setLicense((license) => ({
             ...license,
             ...{
@@ -113,11 +129,15 @@ function Register() {
             url: `https://dsms.mentrictech.in/backend/api/auth/sub_license_list_lv_one_home/${e.target.value}`,
         }).then(({ data }) => {
             setSubLicenseLavel1List(data.data.result.sub_license_lv1)
+            setSubLicenseLavel2List([])
+            setSubLicenseLavel3List([])
         }).catch((error) => {
             console.log(error);
         })
     }
     const getSubLicenseL2 = (e) => {
+        resetSubLicense(1)
+
         setLicense((license) => ({
             ...license,
             ...{
@@ -130,11 +150,14 @@ function Register() {
             url: `https://dsms.mentrictech.in/backend/api/auth/sub_license_list_lv_two_home/${e.target.value}`,
         }).then(({ data }) => {
             setSubLicenseLavel2List(data.data.result.sub_license_lv2)
+            setSubLicenseLavel3List([])
         }).catch((error) => {
             console.log(error);
         })
     }
     const getSubLicenseL3 = (e) => {
+        resetSubLicense(2)
+
         setLicense((license) => ({
             ...license,
             ...{
@@ -166,9 +189,14 @@ function Register() {
                 sub_license_lv3_id: license.sub_license_lv3_id,
             }
         }).then(({ data }) => {
+            if(data.data.success === "falied")
+            Alert('error', data.data.message)
+            else
             setPlans(data.data.result)
+
         }).catch((error) => {
             console.log(error);
+            
         })
     }
     const StudentRegister = (formData) => {
@@ -187,7 +215,7 @@ function Register() {
     }
     function check(e)
     {
-        setValue('school_id', e.target.value, {shouldValidate: true})
+        setValue('school_id', e.target.value, {shouldValidate: true, shouldTouch: true})
         setValue('gender', '')
         if(!getValues('school_id'))
         {
@@ -221,11 +249,11 @@ function Register() {
                 <Select errors={errors.id_type} name={register('id_type', { required: true })} label={'ID Type'} List={idType} />
                 <Input errors={errors.username} name={register('username', { required: true })} label={'Username'} />
                 <Input errors={errors.id_number} name={register('id_number', { required: true })} label={'ID No'} />
-                <Select callback={getSubLicense} label={'License Type'} List={LicenseTypeList} />
-                <Select className="subLicense" callback={getSubLicenseL1} label={'Sub License Type'} List={SubLicenseTypeList} />
-                <Select className="subLicense" callback={getSubLicenseL2} label={'Sub License Level 1'} List={SubLicenseLevel1List} />
-                <Select className="subLicense" callback={getSubLicenseL3} label={'Sub License Level 2'} List={SubLicenseLevel2List} />
-                <Select className="subLicense" callback={(e) => setLicense((license) => ({ ...license, ...{ sub_license_lv3_id: e.target.value } }))} label={'Sub License Level 3'} List={SubLicenseLevel3List} />
+                <Select callback={getSubLicense} label={<>License Type (<span className="text-red-600 text-xs">NOTE:- First, choose a gender. </span>)</>} List={LicenseTypeList} />
+                {license.license_type_id && <Select callback={getSubLicenseL1} className={"sublicense"} label={'Sub License Type'} List={SubLicenseTypeList} />}
+                {license.sub_license_id && <Select callback={getSubLicenseL2} className={"sublicense"} label={'Sub License Level 1'} List={SubLicenseLevel1List} />}
+                {license.sub_license_lv1_id && <Select callback={getSubLicenseL3} className={"sublicense"} label={'Sub License Level 2'} List={SubLicenseLevel2List} />}
+                {license.sub_license_lv2_id && <Select className={"sublicense"} callback={(e) => setLicense((license) => ({ ...license, ...{ sub_license_lv3_id: e.target.value } }))} label={'Sub License Level 3'} List={SubLicenseLevel3List} />}
                 <Input errors={errors.password} name={register('password', { required: true })} label={'Password'} type={'password'} />
                 <Input errors={errors.confirm_password} name={register('confirm_password', { required: true })} label={'Confirm Password'} type={'password'} />
                 <Select errors={errors.level} callback={getPlans} name={register('level', { required: true })} label={'Sub License Level 3'} List={levels} />
