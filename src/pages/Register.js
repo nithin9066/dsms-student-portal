@@ -176,7 +176,7 @@ function Register() {
         })
     }
     const getPlans = (e) => {
-
+        setValue('level_id', e.target.value)
         axios({
             method: "POST",
             url: `https://dsms.mentrictech.in/backend/api/auth/get_subscriptionplans_home`,
