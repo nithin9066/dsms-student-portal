@@ -1,18 +1,18 @@
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useLoading } from "react-hook-loading";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Alert } from "../components/Alert";
+import Loading from "../components/Loading";
 
 
-function Login(props) {
+function Login() {
     const { register, handleSubmit, formState: { errors } } = useForm({ shouldUseNativeValidation: true })
     const [schoolList, setschoolList] = useState([]);
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
     const submitBtn = useRef();
-    const [loading, setLoading] = useLoading(false)
     useEffect(() => {
         console.log(location.state);
         setLoading(true)
@@ -61,38 +61,39 @@ function Login(props) {
         })
     }
     return (
-        <div className="h-screen bg-slate-300 flex justify-center items-center">
-
-            <div className="bg-white rounded-xl lg:p-10 px-3 py-5 drop-shadow-md">
-                <h1 className="text-2xl text-black font-extrabold mb-7 uppercase">Student Login</h1>
-                <form onSubmit={handleSubmit(loginHandler)} className="space-y-5">
-                    <div className="flex flex-col gap-2">
-                        <label className="font-medium">School</label>
-                        <select {...register('school_id', { required: true })} className="border border-black/30 rounded-md p-2">
-                            <option>Select School</option>
-                            {
-                                schoolList.map((item, inx) => <option key={inx} value={item.id}>{item.name}</option>)
-                            }
-                        </select>
-                    </div>
-                    <div className="flex flex-col gap-2">
-                        <label className="font-medium">Email</label>
-                        <input type={'text'} {...register('email', { required: true })} className="border border-black/30 rounded-md p-2" />
-                    </div>
-                    <div className="flex flex-col gap-2">
-                        <label className="font-medium">Password</label>
-                        <input type={'password'} {...register('password', { required: true })} className="border border-black/30 rounded-md p-2" />
-                    </div>
-                    <div>
-                    <button ref={submitBtn} className="w-full bg-black text-white font-medium p-2 rounded-md">Login</button>
-                    </div>
-                    <div>
-                        <Link className="font-medium text-sm" to={'/register'}>Don’t Have Account? <span className="text-blue-800 ">Sign up here</span></Link>
-                    </div>
-                </form>
+        <>
+        <Loading isloading={loading} />
+            <div className="h-screen bg-slate-300 flex justify-center items-center">
+                <div className="bg-white rounded-xl lg:p-10 px-3 py-5 drop-shadow-md">
+                    <h1 className="text-2xl text-black font-extrabold mb-7 uppercase">Student Login</h1>
+                    <form onSubmit={handleSubmit(loginHandler)} className="space-y-5">
+                        <div className="flex flex-col gap-2">
+                            <label className="font-medium">School</label>
+                            <select {...register('school_id', { required: true })} className="border border-black/30 rounded-md p-2">
+                                <option>Select School</option>
+                                {
+                                    schoolList.map((item, inx) => <option key={inx} value={item.id}>{item.name}</option>)
+                                }
+                            </select>
+                        </div>
+                        <div className="flex flex-col gap-2">
+                            <label className="font-medium">Email</label>
+                            <input type={'text'} {...register('email', { required: true })} className="border border-black/30 rounded-md p-2" />
+                        </div>
+                        <div className="flex flex-col gap-2">
+                            <label className="font-medium">Password</label>
+                            <input type={'password'} {...register('password', { required: true })} className="border border-black/30 rounded-md p-2" />
+                        </div>
+                        <div>
+                            <button ref={submitBtn} className="w-full bg-black text-white font-medium p-2 rounded-md">Login</button>
+                        </div>
+                        <div>
+                            <Link className="font-medium text-sm" to={'/register'}>Don’t Have Account? <span className="text-blue-800 ">Sign up here</span></Link>
+                        </div>
+                    </form>
+                </div>
             </div>
-
-        </div>
+        </>
     );
 }
 
